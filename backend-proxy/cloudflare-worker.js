@@ -1,5 +1,5 @@
-// Cloudflare Worker: VisaFill AI Backend Proxy
-// Deploy to Cloudflare Workers for 100% free serverless hosting (100,000 requests/day)
+// Cloudflare Worker: Indian Visa Auto Fill Backend Proxy
+// Shakil Travels Edition - 100% Free Serverless Hosting (100,000 requests/day)
 
 export default {
   async fetch(request, env) {
@@ -9,14 +9,30 @@ export default {
         status: 204,
         headers: {
           "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
           "Access-Control-Max-Age": "86400",
         },
       });
     }
 
-    // Only allow POST
+    // 2. Health check on GET /
+    if (request.method === "GET") {
+      return new Response(JSON.stringify({
+        status: "online",
+        service: "Indian Visa Auto Fill Backend Proxy",
+        owner: "Shakil Travels",
+        timestamp: new Date().toISOString()
+      }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
+    // 3. Only allow POST for extraction
     if (request.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), {
         status: 405,
@@ -30,7 +46,9 @@ export default {
     try {
       const apiKey = env.GEMINI_API_KEY;
       if (!apiKey) {
-        return new Response(JSON.stringify({ error: "GEMINI_API_KEY secret is not set in Cloudflare Worker environment." }), {
+        return new Response(JSON.stringify({
+          error: "GEMINI_API_KEY secret is not set in Cloudflare Worker environment. Run: npx wrangler secret put GEMINI_API_KEY"
+        }), {
           status: 500,
           headers: {
             "Content-Type": "application/json",
@@ -79,7 +97,7 @@ export default {
         });
       }
 
-      // Return successful response to extension
+      // Return successful response to Chrome Extension
       return new Response(JSON.stringify(data), {
         status: 200,
         headers: {

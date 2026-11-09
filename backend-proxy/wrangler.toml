@@ -1,7 +1,28 @@
+# ==============================================================================
+# Cloudflare Wrangler Configuration
+# Indian Visa Auto Fill - Shakil Travels Backend Proxy
+# ==============================================================================
+
 name = "visafill-proxy"
 main = "cloudflare-worker.js"
 compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
 
-# Environment variables (GEMINI_API_KEY should be set using: npx wrangler secret put GEMINI_API_KEY)
+# Deploy to Cloudflare's free *.workers.dev domain
+workers_dev = true
+
+# Enable real-time logging and analytics in Cloudflare Dashboard
+[observability]
+enabled = true
+
+# Public environment variables
 [vars]
 ENVIRONMENT = "production"
+APP_NAME = "Indian Visa Auto Fill - Shakil Travels"
+API_VERSION = "v1"
+
+# ------------------------------------------------------------------------------
+# Secrets Configuration:
+# To set your secret Gemini API key, run in your terminal:
+#   npx wrangler secret put GEMINI_API_KEY
+# ------------------------------------------------------------------------------
