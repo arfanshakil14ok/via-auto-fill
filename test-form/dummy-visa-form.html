@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Visa Application Portal - Full Test Suite</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: #334155;
+      padding: 30px 15px 100px;
+    }
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+    h1 {
+      font-size: 24px;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    p.subtitle {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 16px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e3a8a;
+      margin: 24px 0 14px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #dbeafe;
+    }
+    .form-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .form-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #475569;
+    }
+    input[type="text"], input[type="email"], input[type="tel"], select, textarea {
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #3b82f6;
+    }
+    .split-date-container {
+      display: flex;
+      gap: 8px;
+    }
+    .split-date-container input, .split-date-container select {
+      flex: 1;
+    }
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      padding-top: 8px;
+    }
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 0;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    /* Captcha Card */
+    .captcha-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .captcha-badge {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 4px;
+      background: #e2e8f0;
+      padding: 8px 16px;
+      border-radius: 6px;
+      color: #1e293b;
+      user-select: none;
+      border: 1px dashed #94a3b8;
+    }
+    button.submit-btn {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+    button.submit-btn:hover {
+      background-color: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Universal Visa Portal Full Simulator</h1>
+    <p class="subtitle">Complete test environment featuring presets, split dates, ISO country mapping, and Captcha helper.</p>
+
+    <form id="visaForm" onsubmit="event.preventDefault(); alert('Application Submitted Successfully!');">
+      <!-- Section 1 -->
+      <div class="section-title">1. Applicant Identity & Personal Details</div>
+      
+      <div class="form-row">
+        <div class="form-col">
+          <label for="txtGivenName">Given Name(s) / First Name:</label>
+          <input type="text" id="txtGivenName" name="applicantGivenName" placeholder="As shown on passport">
+        </div>
+        <div class="form-col">
+          <label for="txtSurname">Surname / Family Name:</label>
+          <input type="text" id="txtSurname" name="applicantSurname" placeholder="Family name">
+        </div>
+      </div>
+
+      <!-- Split Date Example (UK Gov / US DS-160 style) -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Date of Birth (Day / Month / Year):</label>
+          <div class="split-date-container">
+            <input type="text" id="dob_day" name="birth_day" placeholder="DD" maxlength="2">
+            <select id="dob_month" name="birth_month">
+              <option value="">Month</option>
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+            <input type="text" id="dob_year" name="birth_year" placeholder="YYYY" maxlength="4">
+          </div>
+        </div>
+
+        <div class="form-col">
+          <label>Sex / Gender:</label>
+          <div class="radio-group">
+            <label><input type="radio" name="gender" value="male"> Male</label>
+            <label><input type="radio" name="gender" value="female"> Female</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label for="ddlNationality">Country of Nationality (ISO-2 Value):</label>
+          <select id="ddlNationality" name="nationality">
+            <option value="">-- Select Country --</option>
+            <option value="BD">Bangladesh</option>
+            <option value="IN">India</option>
+            <option value="PK">Pakistan</option>
+            <option value="US">United States</option>
+            <option value="GB">United Kingdom</option>
+            <option value="CA">Canada</option>
+            <option value="MY">Malaysia</option>
+            <option value="SG">Singapore</option>
+            <option value="SA">Saudi Arabia</option>
+          </select>
+        </div>
+        <div class="form-col">
+          <label for="txtPlaceOfBirth">Place of Birth (City / District):</label>
+          <input type="text" id="txtPlaceOfBirth" name="birthCity" placeholder="City of birth">
+        </div>
+      </div>
+
+      <!-- Section 2: Passport -->
+      <div class="section-title">2. Travel Document & Passport Details</div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label for="txtPassportNo">Passport Number:</label>
+          <input type="text" id="txtPassportNo" name="passportNumber" placeholder="e.g. A01234567">
+        </div>
+        <div class="form-col">
+          <label for="ddlPassportType">Passport Type:</label>
+          <select id="ddlPassportType" name="passportType">
+            <option value="ORDINARY">Ordinary / Regular</option>
+            <option value="OFFICIAL">Official</option>
+            <option value="DIPLOMATIC">Diplomatic</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label for="txtIssueDate">Date of Issue (DD/MM/YYYY):</label>
+          <input type="text" id="txtIssueDate" name="passportIssueDate" placeholder="DD/MM/YYYY">
+        </div>
+        <div class="form-col">
+          <label for="txtExpiryDate">Date of Expiry (DD/MM/YYYY):</label>
+          <input type="text" id="txtExpiryDate" name="passportExpiryDate" placeholder="DD/MM/YYYY">
+        </div>
+      </div>
+
+      <!-- Section 3: Site Presets (Boilerplate Yes/No Questions) -->
+      <div class="section-title">3. Eligibility & Security Questions (Site Preset Test)</div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label>Have you ever changed your name?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="nameChange" value="yes"> Yes</label>
+            <label><input type="radio" name="nameChange" value="no"> No</label>
+          </div>
+        </div>
+        <div class="form-col">
+          <label>Do you hold any other nationality or citizenship?</label>
+          <select name="otherNationality">
+            <option value="">-- Select --</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label>Have you ever been refused a visa to any country?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="refusedVisa" value="yes"> Yes</label>
+            <label><input type="radio" name="refusedVisa" value="no"> No</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Captcha Verification (Auto-Scroll & Alert Test) -->
+      <div class="section-title">4. Security Verification (Captcha Test)</div>
+      
+      <div class="captcha-box">
+        <div class="captcha-badge">7K89M</div>
+        <div class="form-col">
+          <label for="txtCaptcha">Enter the security Captcha code:</label>
+          <input type="text" id="txtCaptcha" name="captcha" placeholder="Type captcha code here">
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Visa Application</button>
+    </form>
+  </div>
+</body>
+</html>

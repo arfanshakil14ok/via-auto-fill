@@ -1,0 +1,121 @@
+/* In-page styling for VisaFill AI */
+
+/* Highlight animation for filled input elements */
+.visafill-highlight {
+  outline: 2px solid #10b981 !important;
+  background-color: #ecfdf5 !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.45) !important;
+  transition: all 0.3s ease-in-out !important;
+}
+
+/* Captcha Auto-Scroll Alert Styling */
+.visafill-captcha-alert {
+  outline: 3px solid #f59e0b !important;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.7) !important;
+  animation: pulse-captcha 1.2s infinite ease-in-out !important;
+}
+
+@keyframes pulse-captcha {
+  0%, 100% {
+    outline-color: #f59e0b;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.7);
+  }
+  50% {
+    outline-color: #ef4444;
+    box-shadow: 0 0 24px rgba(239, 68, 68, 0.9);
+  }
+}
+
+/* Floating Action Button (FAB) on Web Pages */
+#visafill-fab-container {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 2147483647;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#visafill-fab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+#visafill-fab-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+}
+
+#visafill-fab-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.visafill-fab-icon {
+  font-size: 16px;
+  animation: pulse-icon 2s infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+#visafill-fab-btn.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Floating Toast Notification */
+#visafill-toast {
+  position: fixed;
+  bottom: 75px;
+  right: 25px;
+  z-index: 2147483647;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateY(15px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  max-width: 320px;
+}
+
+#visafill-toast.visafill-toast-show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.visafill-toast-success {
+  background-color: #059669;
+}
+
+.visafill-toast-info {
+  background-color: #2563eb;
+}
+
+.visafill-toast-warning {
+  background-color: #d97706;
+}
+
+.visafill-toast-error {
+  background-color: #dc2626;
+}

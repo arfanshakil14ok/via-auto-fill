@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisaFill AI - Universal Suite</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <img src="../icons/icon48.png" class="app-logo-img" alt="VisaFill Logo">
+        <div>
+          <h1>VisaFill AI</h1>
+          <span class="badge">Shakil Travels Edition</span>
+        </div>
+      </div>
+      <button id="settingsBtn" class="icon-btn" title="Settings">⚙️</button>
+    </header>
+
+    <!-- Global App Mode Navigation -->
+    <nav class="main-nav">
+      <button class="nav-tab active" data-nav="nav-autofill">📋 Auto-Fill</button>
+      <button class="nav-tab" data-nav="nav-photo">📷 Photo Tool</button>
+      <button class="nav-tab" data-nav="nav-agency">📁 Agency CSV</button>
+    </nav>
+
+    <!-- Settings Panel (Collapsible) -->
+    <section id="settingsSection" class="settings-card hidden">
+      <div class="card-header">
+        <h3>Cloud & Extraction Settings</h3>
+        <span id="activeEngineBadge" class="status-badge">Cloud Engine</span>
+      </div>
+
+      <!-- Cloud Proxy URL (Default for users) -->
+      <div class="form-group">
+        <label for="proxyUrl">Production Cloud Backend URL</label>
+        <div class="input-with-action">
+          <input type="text" id="proxyUrl" placeholder="https://visafill-proxy.workers.dev">
+          <button id="saveProxyUrlBtn" class="btn btn-secondary">Save</button>
+        </div>
+        <small class="hint">Deploy your free Cloudflare Worker so users never need an API key.</small>
+      </div>
+
+      <!-- Optional Personal Key (Override) -->
+      <div class="form-group" style="margin-top: 8px;">
+        <label for="apiKey">Personal Gemini API Key (Optional Override)</label>
+        <div class="input-with-action">
+          <input type="password" id="apiKey" placeholder="Leave blank to use Cloud Backend">
+          <button id="saveApiKeyBtn" class="btn btn-secondary">Save</button>
+        </div>
+        <small class="hint">Overrides the cloud backend with your personal key.</small>
+      </div>
+
+      <div class="form-group checkbox-group" style="margin-top: 8px;">
+        <label class="switch-label">
+          <input type="checkbox" id="toggleFloatingBtn" checked>
+          <span>Show On-Page Floating Auto-Fill Button (⚡)</span>
+        </label>
+      </div>
+      <div class="form-group checkbox-group">
+        <label class="switch-label">
+          <input type="checkbox" id="toggleSitePresets" checked>
+          <span>Enable Site Presets (Auto-answer common No/Yes questions)</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- VIEW 1: AUTO-FILL & PASSPORT DATA VIEW        -->
+    <!-- ============================================== -->
+    <main id="nav-autofill" class="nav-content active">
+      <!-- Profile Selector Bar -->
+      <section class="profile-bar">
+        <label for="savedProfiles">Active Applicant:</label>
+        <select id="savedProfiles">
+          <option value="new">+ New Applicant Profile</option>
+        </select>
+      </section>
+
+      <!-- Step 1: Upload Documents -->
+      <section class="card upload-card">
+        <div class="card-header">
+          <h2>1. Passport Upload</h2>
+          <div class="mode-toggle">
+            <label class="radio-pill active"><input type="radio" name="extractMode" value="gemini" checked> 🤖 AI Vision</label>
+            <label class="radio-pill"><input type="radio" name="extractMode" value="mrz"> 📴 Offline MRZ</label>
+          </div>
+        </div>
+
+        <!-- Single Upload Box (Image or PDF) -->
+        <div id="aiUploadArea">
+          <div class="upload-box single-upload-box" id="passportDropZone">
+            <input type="file" id="passportFile" accept="image/*,application/pdf" class="file-input">
+            <div class="upload-content" id="passportPlaceholder">
+              <span class="upload-icon">📄</span>
+              <span class="upload-title">Upload Passport (Photo or PDF)</span>
+              <span class="upload-subtitle">Single photo, full spread scan, or multi-page PDF</span>
+            </div>
+            
+            <!-- Unified Preview Container -->
+            <div class="preview-container hidden" id="passportPreviewContainer">
+              <img id="passportImgPreview" alt="Passport Preview" class="hidden">
+              <div id="passportPdfPreview" class="pdf-preview-box hidden">
+                <span class="pdf-icon">📑</span>
+                <span id="pdfFileName" class="pdf-filename">passport.pdf</span>
+                <span id="pdfFileSize" class="pdf-filesize">0 KB</span>
+              </div>
+              <button class="remove-btn" id="removePassportBtn" title="Remove">✕</button>
+            </div>
+          </div>
+
+          <button id="extractBtn" class="btn btn-primary btn-block" disabled style="margin-top: 8px;">
+            <span class="btn-text">✨ Extract All Visa Details</span>
+            <span class="spinner hidden" id="extractSpinner"></span>
+          </button>
+        </div>
+
+        <!-- Offline MRZ Area -->
+        <div id="mrzArea" class="hidden">
+          <p class="hint">Paste the 2 lines of MRZ text from the bottom of the passport, or scan them:</p>
+          <textarea id="mrzInput" rows="3" placeholder="P<BGDNAME<<SURNAME<<<<<<<<<<<<<<<<<<<<<<<<<<&#10;A012345678BGD9001015M3001015<<<<<<<<<<<<<<04" style="font-family: monospace; font-size: 11px;"></textarea>
+          <button id="parseMrzBtn" class="btn btn-primary btn-block" style="margin-top: 6px;">
+            📴 Parse MRZ Offline (Free)
+          </button>
+        </div>
+      </section>
+
+      <!-- Step 2: Extracted Information Preview & Editor -->
+      <section class="card data-card" id="dataSection">
+        <div class="card-header">
+          <h2>2. Applicant Details</h2>
+          <span id="dataStatusBadge" class="status-badge">Ready</span>
+        </div>
+
+        <!-- Sub Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tab-personal">Personal</button>
+          <button class="tab-btn" data-tab="tab-passport">Passport</button>
+          <button class="tab-btn" data-tab="tab-contact">Contact & Family</button>
+        </div>
+
+        <form id="detailsForm">
+          <!-- Tab 1: Personal -->
+          <div class="tab-content active" id="tab-personal">
+            <div class="details-grid">
+              <div class="form-group col-2">
+                <label>Given / First Name(s)</label>
+                <input type="text" id="givenName" name="givenName" placeholder="e.g. MOHAMMAD">
+              </div>
+              <div class="form-group col-2">
+                <label>Surname / Last Name</label>
+                <input type="text" id="surname" name="surname" placeholder="e.g. ISLAM">
+              </div>
+
+              <div class="form-group col-2">
+                <label>Date of Birth</label>
+                <input type="text" id="dob" name="dob" placeholder="DD/MM/YYYY">
+              </div>
+              <div class="form-group col-2">
+                <label>Gender / Sex</label>
+                <select id="gender" name="gender">
+                  <option value="">Select</option>
+                  <option value="MALE">Male (M)</option>
+                  <option value="FEMALE">Female (F)</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group col-2">
+                <label>Nationality / Country</label>
+                <input type="text" id="nationality" name="nationality" placeholder="e.g. Bangladesh">
+              </div>
+              <div class="form-group col-2">
+                <label>Place of Birth</label>
+                <input type="text" id="placeOfBirth" name="placeOfBirth" placeholder="e.g. Dhaka">
+              </div>
+
+              <div class="form-group col-2">
+                <label>Marital Status</label>
+                <select id="maritalStatus" name="maritalStatus">
+                  <option value="">Select</option>
+                  <option value="SINGLE">Single / Unmarried</option>
+                  <option value="MARRIED">Married</option>
+                  <option value="DIVORCED">Divorced</option>
+                  <option value="WIDOWED">Widowed</option>
+                </select>
+              </div>
+              <div class="form-group col-2">
+                <label>Occupation / Profession</label>
+                <input type="text" id="occupation" name="occupation" placeholder="e.g. Business">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Passport -->
+          <div class="tab-content" id="tab-passport">
+            <div class="details-grid">
+              <div class="form-group col-2">
+                <label>Passport Number</label>
+                <input type="text" id="passportNumber" name="passportNumber" placeholder="e.g. A01234567">
+              </div>
+              <div class="form-group col-2">
+                <label>Passport Type</label>
+                <select id="passportType" name="passportType">
+                  <option value="ORDINARY">Ordinary / Regular</option>
+                  <option value="OFFICIAL">Official</option>
+                  <option value="DIPLOMATIC">Diplomatic</option>
+                </select>
+              </div>
+
+              <div class="form-group col-2">
+                <label>Date of Issue</label>
+                <input type="text" id="issueDate" name="issueDate" placeholder="DD/MM/YYYY">
+              </div>
+              <div class="form-group col-2">
+                <label>Date of Expiry</label>
+                <input type="text" id="expiryDate" name="expiryDate" placeholder="DD/MM/YYYY">
+              </div>
+
+              <div class="form-group col-2">
+                <label>Place / Authority of Issue</label>
+                <input type="text" id="issuePlace" name="issuePlace" placeholder="e.g. DIP/Dhaka">
+              </div>
+              <div class="form-group col-2">
+                <label>National ID / NID</label>
+                <input type="text" id="nid" name="nid" placeholder="National ID number">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Contact & Family -->
+          <div class="tab-content" id="tab-contact">
+            <div class="details-grid">
+              <div class="form-group col-2">
+                <label>Email Address</label>
+                <input type="text" id="email" name="email" placeholder="applicant@email.com">
+              </div>
+              <div class="form-group col-2">
+                <label>Phone / Mobile</label>
+                <input type="text" id="phone" name="phone" placeholder="+8801...">
+              </div>
+
+              <div class="form-group col-2">
+                <label>Father's Name</label>
+                <input type="text" id="fatherName" name="fatherName" placeholder="Father's full name">
+              </div>
+              <div class="form-group col-2">
+                <label>Mother's Name</label>
+                <input type="text" id="motherName" name="motherName" placeholder="Mother's full name">
+              </div>
+
+              <div class="form-group col-2">
+                <label>Spouse Name</label>
+                <input type="text" id="spouseName" name="spouseName" placeholder="Spouse name">
+              </div>
+              <div class="form-group col-2">
+                <label>Postal / ZIP Code</label>
+                <input type="text" id="postalCode" name="postalCode" placeholder="Postal Code">
+              </div>
+
+              <div class="form-group col-full">
+                <label>Permanent Residential Address</label>
+                <textarea id="address" name="address" rows="2" placeholder="Full residential street, area, district"></textarea>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="action-row">
+          <button id="saveProfileBtn" class="btn btn-secondary">💾 Save Profile</button>
+          <button id="clearFormBtn" class="btn btn-danger">Clear</button>
+        </div>
+      </section>
+
+      <!-- Step 3: Universal Auto-Fill Current Form -->
+      <section class="card action-card">
+        <div class="card-header">
+          <h2>3. Universal Auto-Fill</h2>
+          <span class="badge-success">All Visa Sites</span>
+        </div>
+        
+        <button id="autofillBtn" class="btn btn-success btn-block btn-lg">
+          🚀 Auto-Fill Active Page
+        </button>
+
+        <div id="fillSummary" class="fill-summary hidden">
+          <span class="icon">✅</span>
+          <span id="fillSummaryText">Successfully filled 0 fields.</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============================================== -->
+    <!-- VIEW 2: VISA PHOTO RESIZER & SPEC CHECKER     -->
+    <!-- ============================================== -->
+    <main id="nav-photo" class="nav-content">
+      <section class="card">
+        <div class="card-header">
+          <h2>📷 Visa Photo Resizer & Cropper</h2>
+          <span class="tag">Compliant Specs</span>
+        </div>
+        <p class="hint">Upload applicant photo and instantly crop/resize to official visa specifications with strict file-size limits.</p>
+
+        <div class="form-group" style="margin-top: 8px;">
+          <label for="photoPreset">Target Visa Specification:</label>
+          <select id="photoPreset">
+            <option value="us_india">US / India / Pakistan (2x2 in / 600x600 px / Max 240 KB)</option>
+            <option value="schengen">Schengen & Europe (35x45 mm / 413x531 px / Max 300 KB)</option>
+            <option value="uk">UK Visas & Immigration (35x45 mm / 413x531 px)</option>
+            <option value="malaysia">Malaysia & Singapore (35x50 mm / 413x590 px)</option>
+            <option value="china">China & Japan (33x48 mm / 390x567 px)</option>
+          </select>
+        </div>
+
+        <!-- Photo Upload Box -->
+        <div class="upload-box" id="photoDropZone" style="margin-top: 10px; min-height: 120px;">
+          <input type="file" id="photoInput" accept="image/*" class="file-input">
+          <div class="upload-content" id="photoPlaceholder">
+            <span class="upload-icon">📸</span>
+            <span class="upload-title">Upload Applicant Photo</span>
+            <span class="upload-subtitle">JPG, PNG or WEBP</span>
+          </div>
+        </div>
+
+        <!-- Canvas Crop Preview Area -->
+        <div id="photoEditorArea" class="hidden" style="margin-top: 12px; text-align: center;">
+          <div class="canvas-wrapper">
+            <canvas id="photoCanvas" width="300" height="300"></canvas>
+            <div class="crop-overlay"></div>
+          </div>
+
+          <div class="zoom-controls">
+            <label>Zoom / Scale:</label>
+            <input type="range" id="photoZoom" min="0.5" max="2.5" step="0.05" value="1">
+          </div>
+
+          <div class="action-row" style="margin-top: 10px;">
+            <button id="downloadPhotoBtn" class="btn btn-success btn-block">
+              💾 Download Compliant Photo
+            </button>
+          </div>
+          <small id="photoSizeFeedback" class="hint" style="color: #059669; font-weight: 600; margin-top: 4px; display: block;"></small>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============================================== -->
+    <!-- VIEW 3: AGENCY BULK CSV IMPORT / EXPORT       -->
+    <!-- ============================================== -->
+    <main id="nav-agency" class="nav-content">
+      <section class="card">
+        <div class="card-header">
+          <h2>📁 Agency Bulk Profile Manager</h2>
+          <span class="tag">Excel & CSV</span>
+        </div>
+        <p class="hint">Import hundreds of passport profiles from an Excel/CSV file at once, or export saved client data.</p>
+
+        <div class="agency-action-grid">
+          <!-- Import -->
+          <div class="agency-card">
+            <h3>📥 Import Profiles</h3>
+            <p>Upload a CSV file containing applicant records.</p>
+            <input type="file" id="csvFileInput" accept=".csv" class="file-input-inline">
+            <button id="importCsvBtn" class="btn btn-primary btn-block" style="margin-top: 8px;">Upload & Import CSV</button>
+          </div>
+
+          <!-- Export -->
+          <div class="agency-card">
+            <h3>📤 Export Profiles</h3>
+            <p>Export all stored applicants into an Excel-ready CSV.</p>
+            <button id="exportCsvBtn" class="btn btn-secondary btn-block">Download Profiles CSV</button>
+            <button id="downloadTemplateBtn" class="btn btn-link btn-block" style="margin-top: 4px; font-size: 11px;">
+              📄 Download Sample CSV Template
+            </button>
+          </div>
+        </div>
+
+        <div class="agency-stats" style="margin-top: 14px;">
+          <div class="card-header">
+            <h3>Saved Profiles (<span id="profileCountDisplay">0</span>)</h3>
+            <button id="deleteAllProfilesBtn" class="btn btn-danger btn-sm" style="padding: 3px 8px; font-size: 10px;">Delete All</button>
+          </div>
+          <div id="agencyProfilesList" class="agency-list">
+            <!-- Dynamic profile items -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

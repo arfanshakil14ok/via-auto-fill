@@ -1,0 +1,7 @@
+name = "visafill-proxy"
+main = "cloudflare-worker.js"
+compatibility_date = "2024-11-01"
+
+# Environment variables (GEMINI_API_KEY should be set using: npx wrangler secret put GEMINI_API_KEY)
+[vars]
+ENVIRONMENT = "production"
