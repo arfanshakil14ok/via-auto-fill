@@ -1,6 +1,10 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
+<<<<<<< HEAD
   "name": "via-auto-fill",
+=======
+ "name": "via-auto-fill",
+>>>>>>> 6637db152a419cab56208a2d750f846cee7e11db
   "main": "cloudflare-worker.js",
   "compatibility_date": "2024-11-01",
   "compatibility_flags": [
